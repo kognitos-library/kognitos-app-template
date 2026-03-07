@@ -1,3 +1,10 @@
+---
+description: Core principles: feature-agnostic design, composition, design-first workflow
+globs:
+  - '**/*.{ts,tsx}'
+alwaysApply: false
+---
+
 # Philosophy
 
 ## Feature-Agnostic Design System

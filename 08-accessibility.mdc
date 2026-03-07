@@ -1,3 +1,10 @@
+---
+description: Accessibility requirements for Kognitos apps
+globs:
+  - '**/*.{ts,tsx}'
+alwaysApply: false
+---
+
 # Accessibility
 
 ## General Requirements

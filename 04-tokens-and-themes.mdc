@@ -1,3 +1,10 @@
+---
+description: Color tokens, theme system, light/dark mode
+globs:
+  - '**/*.{ts,tsx,css}'
+alwaysApply: false
+---
+
 # Tokens and Themes
 
 ## Theme System

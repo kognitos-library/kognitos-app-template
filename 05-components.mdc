@@ -1,3 +1,10 @@
+---
+description: Component usage patterns and composition
+globs:
+  - '**/*.{ts,tsx}'
+alwaysApply: false
+---
+
 # Component Usage
 
 ## Component Categories
@@ -48,7 +55,7 @@ Use `Field` for labels, descriptions, and errors. Use `Form` with React Hook For
 
 ### Data Display
 
-- `DataTable` — For tabular data (see [06-data-tables.md](./06-data-tables.md))
+- `DataTable` — For tabular data (see [06-data-tables.mdc](./06-data-tables.mdc))
 - `Avatar`, `Badge`, `Progress`, `Empty`
 - `ChartContainer`, `ChartTooltip` — For Recharts integration
 

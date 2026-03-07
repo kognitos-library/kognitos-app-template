@@ -1,3 +1,8 @@
+---
+description: Lattice setup, imports, ThemeProvider, and peer dependencies
+alwaysApply: false
+---
+
 # Setup and Usage
 
 ## Installation

@@ -1,3 +1,10 @@
+---
+description: i18n for user-facing text, allow prop overrides
+globs:
+  - '**/*.{ts,tsx}'
+alwaysApply: false
+---
+
 # Internationalization (i18n)
 
 Lattice components use built-in i18n for user-facing text. When building your app, follow these patterns.

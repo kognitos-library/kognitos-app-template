@@ -1,3 +1,10 @@
+---
+description: Styling rules: use tokens and variants, avoid inline styles
+globs:
+  - '**/*.{ts,tsx,css}'
+alwaysApply: false
+---
+
 # Styling Rules
 
 ## Golden Rules

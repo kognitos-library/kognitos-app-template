@@ -1,3 +1,10 @@
+---
+description: DataTable usage with proper typing, never use AG Grid directly
+globs:
+  - '**/*.{ts,tsx}'
+alwaysApply: false
+---
+
 # DataTable Rules
 
 ## Golden Rules

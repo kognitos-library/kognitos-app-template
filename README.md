@@ -10,14 +10,14 @@ These rules distill patterns, conventions, and best practices from the Lattice d
 
 | Document | Purpose |
 |----------|---------|
-| [01-philosophy.md](./01-philosophy.md) | Core principles: feature-agnostic design, composition |
-| [02-setup-and-usage.md](./02-setup-and-usage.md) | Lattice setup, imports, ThemeProvider |
-| [03-styling.md](./03-styling.md) | Styling rules: tokens, components, what to avoid |
-| [04-tokens-and-themes.md](./04-tokens-and-themes.md) | Color tokens, theme system, light/dark mode |
-| [05-components.md](./05-components.md) | Component usage patterns and composition |
-| [06-data-tables.md](./06-data-tables.md) | DataTable usage with proper typing |
-| [07-internationalization.md](./07-internationalization.md) | i18n for user-facing text |
-| [08-accessibility.md](./08-accessibility.md) | Accessibility requirements |
+| [01-philosophy.mdc](./01-philosophy.mdc) | Core principles: feature-agnostic design, composition |
+| [02-setup-and-usage.mdc](./02-setup-and-usage.mdc) | Lattice setup, imports, ThemeProvider |
+| [03-styling.mdc](./03-styling.mdc) | Styling rules: tokens, components, what to avoid |
+| [04-tokens-and-themes.mdc](./04-tokens-and-themes.mdc) | Color tokens, theme system, light/dark mode |
+| [05-components.mdc](./05-components.mdc) | Component usage patterns and composition |
+| [06-data-tables.mdc](./06-data-tables.mdc) | DataTable usage with proper typing |
+| [07-internationalization.mdc](./07-internationalization.mdc) | i18n for user-facing text |
+| [08-accessibility.mdc](./08-accessibility.mdc) | Accessibility requirements |
 
 ## Golden Rules
 
