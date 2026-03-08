@@ -1,8 +1,5 @@
-# OS
-.DS_Store
-Thumbs.db
-
-# Editor
-.idea
-.vscode/*
-!.vscode/extensions.json
+.env
+node_modules/
+.next/
+packages/*/node_modules/
+*.tgz

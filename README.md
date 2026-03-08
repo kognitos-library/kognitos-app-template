@@ -1,37 +1,106 @@
-# Kognitos App Design Rules
+# Kognitos App Template
 
-Cursor rules for building Kognitos dashboard applications on top of the Kognitos automation platform, using the [Lattice Design System](https://github.com/kognitos/lattice) (`@kognitos/lattice`).
+Project template for building dashboard applications on top of the Kognitos automation platform, using [Next.js](https://nextjs.org/) (App Router), [Lattice UI](https://github.com/kognitos/lattice), and [Cursor](https://cursor.sh/) AI rules.
 
-## Quick Links
-
-| Document | Purpose |
-|----------|---------|
-| [01-workflow.mdc](./01-workflow.mdc) | Master workflow: 6-phase sequence, gates, tech stack, universal rules |
-| [02-api-discovery.mdc](./02-api-discovery.mdc) | Phases 1-3: API reference, environment setup, automation discovery, run output inspection |
-| [03-planning-build.mdc](./03-planning-build.mdc) | Phases 4-6: domain thinking, build plan, design system selection, app build |
-| [04-lattice-ui.mdc](./04-lattice-ui.mdc) | Lattice UI: installation, component mapping, tokens, layout rules, gotchas |
-| [05-npm-local-packages.mdc](./05-npm-local-packages.mdc) | Local npm packages: tarball installation to avoid duplicate dependencies |
-| [06-lib-reference.mdc](./06-lib-reference.mdc) | Reference implementations: API client, Arrow IPC, spy execution, Quill chat |
-| [07-scaffolding.mdc](./07-scaffolding.mdc) | Project scaffolding: config files, CSS setup, API routes, discovery scripts, deps |
-| [08-data-patterns.mdc](./08-data-patterns.mdc) | Data layer: generic run types, state helpers, safe decoding, transforms |
-
-## Usage
-
-Copy these `.mdc` files into your project's `.cursor/rules/` directory to use them as Cursor AI rules.
+## Quick Start
 
 ```bash
-# Clone this repo
-git clone https://github.com/kognitos/kognitos-app-design-rules.git
+# 1. Clone this template
+git clone https://github.com/kognitos/kognitos-app-template.git my-app
+cd my-app
 
-# Copy rules into your project
-cp kognitos-app-design-rules/*.mdc your-project/.cursor/rules/
+# 2. Set up environment
+cp .env.example .env
+# Edit .env with your Kognitos credentials
+
+# 3. Install Lattice UI (from a local tarball — see below)
+#    Add to package.json: "@kognitos/lattice": "file:kognitos-lattice-X.Y.Z.tgz"
+
+# 4. Install dependencies
+npm install
+
+# 5. Verify connectivity
+npx tsx scripts/verify-connection.ts
+
+# 6. Start developing
+npm run dev
 ```
 
-## Golden Rules
+## Installing Lattice UI
 
-1. **Follow the phases in order** — Do not skip ahead. Each phase has a gate that requires user confirmation.
-2. **TypeScript only** — No Python scripts. Use `apache-arrow` npm package for Arrow IPC decoding.
-3. **Use Lattice components** — Don't reinvent. Compose primitives for custom UI.
-4. **Use design tokens** — Never hardcode colors or spacing.
-5. **Never expose API tokens** — All API calls happen server-side.
-6. **Use domain language** — No Kognitos jargon in user-facing text.
+Lattice is not on the public npm registry. Build a tarball from the [Lattice repo](https://github.com/kognitos/lattice):
+
+```bash
+git clone https://github.com/kognitos/lattice.git packages/lattice
+cd packages/lattice && npm install && npm run build && npm pack
+mv kognitos-lattice-*.tgz ../../
+cd ../..
+```
+
+Then add to `package.json`:
+
+```json
+"@kognitos/lattice": "file:kognitos-lattice-1.18.0.tgz"
+```
+
+Run `npm install` and verify with `npm ls react` -- every entry should say `deduped`. See `.cursor/rules/05-npm-local-packages.mdc` for details on why tarballs matter.
+
+## Project Structure
+
+```
+├── .cursor/rules/         Cursor AI rules (process + technical)
+│   ├── 01-workflow.mdc        6-phase build workflow with gates
+│   ├── 02-api-discovery.mdc   Kognitos API reference, Phases 1-3
+│   ├── 03-planning-build.mdc  Phases 4-6: planning and build
+│   ├── 04-lattice-ui.mdc      Lattice UI components, tokens, gotchas
+│   └── 05-npm-local-packages.mdc  Local package install pattern
+├── lib/                   Reusable Kognitos utilities
+│   ├── kognitos.ts            API client, env validation, req()
+│   ├── arrow.ts               Arrow IPC decoding helpers
+│   ├── spy.ts                 Inline code execution
+│   ├── quill.ts               Quill Chat API + NDJSON parsing
+│   └── types.ts               Generic run types (RunState, RawRun)
+├── scripts/               Discovery scripts (run with npx tsx)
+│   ├── verify-connection.ts   Phase 1: test API connectivity
+│   └── decode-outputs.ts      Phase 3: inspect run output schemas
+├── app/                   Next.js App Router
+│   ├── globals.css            Tailwind + Lattice CSS imports
+│   └── layout.tsx             Root layout with ThemeProvider
+├── next.config.ts         apache-arrow as server external package
+├── tsconfig.json          Path aliases, excludes scripts/packages
+├── postcss.config.mjs     Tailwind v4 via @tailwindcss/postcss
+├── package.json           Dependencies with pinned versions
+└── .env.example           Required environment variables
+```
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `KOGNITOS_TOKEN` | Personal access token (`kgn_pat_...`) |
+| `KOGNITOS_ORG_ID` | Organization ID |
+| `KOGNITOS_WORKSPACE_ID` | Workspace ID |
+| `KOGNITOS_BASE_URL` | API base URL (must end with `/api/v1`) |
+| `KOGNITOS_AUTOMATION_ID` | Target automation ID |
+
+## Cursor AI Rules
+
+The `.cursor/rules/` directory contains rules that guide Cursor through a 6-phase build process:
+
+1. **Environment Setup** -- API credentials, connectivity verification
+2. **Discover Automation** -- Understand the automation in domain language
+3. **Inspect Run Outputs** -- Document data schemas from completed runs
+4. **Domain Thinking** -- Determine useful insights from actual data
+5. **Build Plan** -- Concrete plan of pages, data flow, edge cases
+6. **Build the App** -- Implement the plan using Lattice UI
+
+Each phase has a gate requiring user confirmation before proceeding.
+
+## Tech Stack
+
+- **Next.js 15** (App Router) deployed to Vercel
+- **TypeScript** -- all code must be `.ts` or `.tsx`
+- **Tailwind CSS v4** via PostCSS
+- **Lattice UI** (`@kognitos/lattice`) for components and design tokens
+- **Recharts v3** for data visualization
+- **apache-arrow** for Arrow IPC decoding
