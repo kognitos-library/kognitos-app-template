@@ -59,16 +59,29 @@ Run `npm install` and verify with `npm ls react` -- every entry should say `dedu
 │   ├── kognitos.ts            API client, env validation, req()
 │   ├── arrow.ts               Arrow IPC decoding helpers
 │   ├── spy.ts                 Inline code execution
-│   ├── supabase.ts             Supabase client (anon + admin)
-│   ├── chat/                   Chat module (types, context, hook, system prompt)
+│   ├── supabase.ts            Supabase client (anon + admin), table names
+│   ├── chat/                  Chat module
+│   │   ├── types.ts               ChatSession, ChatMessage, stream event types
+│   │   ├── system-prompt.ts       Claude system prompt builder (customize per domain)
+│   │   └── chat-context.tsx       React context provider for chat state
 │   ├── quill.ts               Quill Chat API + NDJSON parsing
 │   └── types.ts               Generic run types (RunState, RawRun)
 ├── scripts/               Discovery scripts (run with npx tsx)
 │   ├── verify-connection.ts   Phase 1: test API connectivity
 │   └── decode-outputs.ts      Phase 3: inspect run output schemas
+├── supabase/
+│   └── migrations/
+│       └── 00000000000001_chat.sql  Chat tables schema (rename prefix per project)
 ├── app/                   Next.js App Router
-│   ├── globals.css            Tailwind + Lattice CSS imports
-│   └── layout.tsx             Root layout with ThemeProvider
+│   ├── globals.css            Tailwind + Lattice CSS imports + chat markdown styles
+│   ├── layout.tsx             Root layout with ThemeProvider + ChatProvider
+│   ├── chat/
+│   │   └── page.tsx           Chat page UI (message bubbles, streaming, suggestions)
+│   └── api/chat/
+│       ├── route.ts           Main chat endpoint (Claude streaming + tools + persistence)
+│       └── sessions/
+│           ├── route.ts       GET (list) + POST (create) sessions
+│           └── [id]/route.ts  GET (messages) + PATCH (title) + DELETE
 ├── next.config.ts         apache-arrow as server external package
 ├── tsconfig.json          Path aliases, excludes scripts/packages
 ├── postcss.config.mjs     Tailwind v4 via @tailwindcss/postcss

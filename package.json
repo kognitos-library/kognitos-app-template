@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@supabase/supabase-js": "^2.49.4",
     "apache-arrow": "^21.1.0",
     "dayjs": "^1.11.13",
     "dotenv": "^17.3.1",
