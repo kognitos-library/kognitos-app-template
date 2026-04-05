@@ -152,6 +152,44 @@ The streamed response contains multiple JSON objects, each with a `state` field.
 
 To extract Quill's answer, find the last message with `completion_response.content` or `agent_message.content`.
 
+### Invoking Published Automations
+
+Use `:invoke` to trigger a published automation with structured inputs. This is the production pattern — use it for chat tool handlers, action buttons, and any feature that runs an automation on behalf of the user.
+
+```
+POST /organizations/{ORG_ID}/workspaces/{WS_ID}/automations/{AUTOMATION_ID}:invoke
+```
+
+```json
+{
+  "inputs": {
+    "Case ID": { "text": "AIQ-2024-0031" },
+    "Amount": { "number": { "lo": 5000 } }
+  },
+  "stage": "AUTOMATION_STAGE_PUBLISHED"
+}
+```
+
+- **`stage`**: Always `"AUTOMATION_STAGE_PUBLISHED"` for production invocations. Use `"AUTOMATION_STAGE_DRAFT"` only during development/testing.
+- **`inputs`**: Keys must match the automation's declared input names exactly. Values use the same typed wrappers as spy code outputs: `{ "text": "..." }`, `{ "number": { "lo": N } }`, `{ "bool_value": true }`.
+- **Response**: Returns `{ "run_id": "organizations/.../runs/{RUN_ID}" }`. Extract the run ID with `.split("/runs/").pop()`.
+- **Polling**: The invocation is asynchronous. Poll `GET .../automations/{AUTOMATION_ID}/runs/{RUN_ID}` until `state.completed`, `state.failed`, or `state.awaiting_guidance` appears. Poll every 1.5–2 seconds with a timeout (45s recommended for chat tools, longer for batch).
+- **Output parsing**: Completed run outputs live in `state.completed.outputs`. Each value uses the same typed wrappers: `{ "text": "..." }`, `{ "number": { "lo": N, "flags": F } }`, `{ "bool_value": true }`, `{ "list": { "items": [...] } }`.
+
+#### When to use `:invoke` vs `executions:run`
+
+| | `:invoke` | `executions:run` (spy code) |
+|---|---|---|
+| **Use case** | Trigger a published automation | Run arbitrary inline code |
+| **Inputs** | Typed, matches automation signature | Embedded in code string |
+| **Execution** | Async — must poll for result | Synchronous — returns immediately |
+| **Connections** | Inherited from automation config | Must be passed explicitly |
+| **In the app** | Chat tool handlers, action buttons | Phase 1-3 discovery scripts |
+
+#### Template helpers
+
+`lib/kognitos.ts` exports `invokeAutomation()` and `pollRun()` for this pattern. See the file for usage — they handle the full invoke → poll → parse cycle with timeout and error handling.
+
 ### Extracting IDs from user-provided URLs
 
 Users often paste Kognitos app URLs like:

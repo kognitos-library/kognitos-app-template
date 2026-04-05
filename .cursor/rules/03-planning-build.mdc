@@ -64,10 +64,11 @@ Follow the Phase 5 plan exactly. Do not add unapproved features or skip approved
 5. Charts and visualizations (using design system color tokens for palettes).
 6. Tables with drill-down.
 7. Run detail view.
-8. Review queue / Resolution Agent integration (if applicable).
-9. Chat page: Claude + Supabase + Kognitos API tools (see `06-chat-support.mdc`).
-10. Empty, loading, and error states.
-11. Polish: responsive layout, transitions, final styling.
+8. Automation invoke routes — use `invokeAutomation()` + `pollRun()` from `lib/kognitos.ts` for action buttons and chat tool handlers that trigger automations (see `02-api-discovery.mdc` → "Invoking Published Automations").
+9. Review queue / Resolution Agent integration (if applicable).
+10. Chat page: Claude + Supabase + Kognitos API tools (see `06-chat-support.mdc`). Chat tool handlers that run automations should use the invoke helpers, not `executions:run`.
+11. Empty, loading, and error states.
+12. Polish: responsive layout, transitions, final styling.
 
 **Quality standards:**
 - All API calls in Next.js Route Handlers or Server Components — no tokens in client code.
