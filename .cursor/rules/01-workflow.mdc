@@ -51,7 +51,7 @@ Follow the six phases below **in strict order**. Do NOT skip ahead. Do NOT start
 
 These files form the template's shared infrastructure. Customize domain-specific values (table prefixes, tool descriptions) but **preserve the structure and safety patterns**:
 
-- `lib/kognitos.ts` — Keep the `Record<string, string | undefined>` type, the validation loop, and the `AUTOMATION_ID` warning. Do not add `import "dotenv/config"`.
+- `lib/kognitos.ts` — Keep the `Record<string, string | undefined>` type, the validation loop, and the `AUTOMATION_ID` warning. Do not add `import "dotenv/config"`. Keep the `invokeAutomation()`, `pollRun()`, and `parseOutputValue()` helpers — they are the standard pattern for calling published automations.
 - `lib/supabase.ts` — Keep the `TABLES` export, the credential warning, and the null-safe client pattern. Always use `TABLES.sessions`/`TABLES.messages` — never hardcode table names.
 - `app/api/chat/**` — Keep `export const dynamic = "force-dynamic"` in every route file. Keep `export const maxDuration = 60` in `route.ts`.
 - `.env.example` — Keep ALL sections (Kognitos, Supabase, Anthropic). Add new vars but never remove existing ones.

@@ -262,6 +262,7 @@ The `ChatProvider` context wraps the app in `app/layout.tsx` so sidebar and chat
 ### Session creation rules
 
 - Clicking "Chat" in the sidebar nav **only navigates** to `/chat` — it does NOT create a new session.
+- The sidebar "Chat" link's `onClick` must call `setActiveSessionId(null)` so the user sees the fresh new-chat view with suggestions instead of the last-viewed session.
 - New sessions are created **only when the user sends a message** without an active session. The `sendMessage` function in `ChatProvider` handles this: `if (!sessionId) { sessionId = await createSession(); }`.
 - Never call `createSession()` from navigation click handlers.
 
@@ -328,3 +329,11 @@ The `"dev": "next dev --port XXXX"` script must specify a unique port. Without i
 ### `@tailwindcss/typography` belongs in `dependencies`, not `devDependencies`
 
 This is a build-time dependency used by Tailwind's CSS processing. Some deployment environments (Vercel, Docker) skip `devDependencies`, which will break the production build if this package is in the wrong section.
+
+### Sidebar "Chat" link must clear `activeSessionId`
+
+When building the sidebar, the Chat nav link must call `setActiveSessionId(null)` in its `onClick` handler. Without this, clicking Chat while viewing a session keeps the old session loaded instead of showing the new-chat empty state with suggestions.
+
+### Race condition: `createSession` triggers a message-loading useEffect
+
+When `sendMessage` calls `createSession()` for the first message, `setActiveSessionId(session.id)` triggers the `useEffect` that fetches messages from the DB. The DB returns `[]` (session was just created) and overwrites the user message that `sendMessage` just appended. Fix: use a `skipNextLoadRef` — set it to `true` in `createSession` before `setActiveSessionId`, and check/reset it at the top of the message-loading `useEffect`. Also guard `showEmpty` in the chat page with `&& !isSending` to prevent the suggestions screen from flashing during the first send.

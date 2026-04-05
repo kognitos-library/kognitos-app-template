@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import type { ChatSession, ChatMessage } from "./types";
 
 interface ChatContextValue {
@@ -12,6 +12,7 @@ interface ChatContextValue {
   isLoadingMessages: boolean;
   isSending: boolean;
   streamingContent: string;
+  toolStatus: string | null;
   error: string | null;
   createSession: () => Promise<string | null>;
   sendMessage: (content: string) => Promise<void>;
@@ -34,7 +35,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [streamingContent, setStreamingContent] = useState("");
+  const [toolStatus, setToolStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const skipNextLoadRef = useRef(false);
 
   const loadSessions = useCallback(async () => {
     try {
@@ -57,6 +60,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!activeSessionId) {
       setMessages([]);
+      return;
+    }
+    if (skipNextLoadRef.current) {
+      skipNextLoadRef.current = false;
       return;
     }
     let cancelled = false;
@@ -85,6 +92,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       const data = await res.json();
       const session = data.session as ChatSession;
       setSessions((prev) => [session, ...prev]);
+      skipNextLoadRef.current = true;
       setActiveSessionId(session.id);
       setMessages([]);
       return session.id;
@@ -111,6 +119,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       setMessages((prev) => [...prev, userMsg]);
       setIsSending(true);
       setStreamingContent("");
+      setToolStatus(null);
       setError(null);
 
       try {
@@ -148,6 +157,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
               if (event.type === "text") {
                 accumulated += event.content ?? "";
                 setStreamingContent(accumulated);
+                setToolStatus(null);
+              } else if (event.type === "tool_use") {
+                setToolStatus(`Running ${event.tool_name ?? "tool"}…`);
+              } else if (event.type === "tool_result") {
+                setToolStatus(null);
               } else if (event.type === "title") {
                 const title = event.content ?? "";
                 setSessions((prev) =>
@@ -178,6 +192,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       } finally {
         setIsSending(false);
         setStreamingContent("");
+        setToolStatus(null);
       }
     },
     [activeSessionId, createSession]
@@ -210,6 +225,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         isLoadingMessages,
         isSending,
         streamingContent,
+        toolStatus,
         error,
         createSession,
         sendMessage,

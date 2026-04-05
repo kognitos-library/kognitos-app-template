@@ -27,6 +27,7 @@ export default function ChatPage() {
     isLoadingMessages,
     isSending,
     streamingContent,
+    toolStatus,
     error,
     sendMessage,
     activeSessionId,
@@ -58,7 +59,7 @@ export default function ChatPage() {
     }
   };
 
-  const showEmpty = !activeSessionId || (messages.length === 0 && !isLoadingMessages);
+  const showEmpty = !activeSessionId || (messages.length === 0 && !isLoadingMessages && !isSending);
 
   return (
     <div className="flex flex-col h-[calc(100vh-1rem)]">
@@ -133,7 +134,7 @@ export default function ChatPage() {
               </div>
             )}
 
-            {isSending && !streamingContent && !error && (
+            {isSending && !error && (!streamingContent || toolStatus) && (
               <div className="flex justify-start">
                 <div className="rounded-lg px-4 py-3 bg-muted">
                   <div className="flex items-center gap-2">
@@ -143,7 +144,7 @@ export default function ChatPage() {
                       <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:300ms]" />
                     </div>
                     <Text level="xSmall" color="muted">
-                      Thinking...
+                      {toolStatus ?? "Thinking..."}
                     </Text>
                   </div>
                 </div>
